@@ -1,13 +1,14 @@
 from datetime import timezone
 from email.policy import default
-
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey, Float, Enum, column
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 import enum
 from .database import Base
 
-
+USER_ID_FK = "users.id"
+REQUEST_ID_FK = "requests.id"
+SESSION_ID_FK = "session.id"
 
 class UserRole(str, enum.Enum):
     NANNY = "nanny"
@@ -46,7 +47,7 @@ class Request(Base):
     __tablename__ = "requests"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("USER_ID_FK"))
     title = Column(String, nullable=False)
     description = Column(Text, nullable=True)
     tags = Column(String)
@@ -64,9 +65,9 @@ class Session(Base):
     __tablename__ = "sessions"
 
     id = Column(Integer, primary_key=True, index=True)
-    request_id = Column(Integer, ForeignKey("request.id"))
-    family_id = Column(Integer, ForeignKey("users.id"))
-    nanny_id = Column(Integer, ForeignKey("users.id"))
+    request_id = Column(Integer, ForeignKey("REQUEST_ID_FK"))
+    family_id = Column(Integer, ForeignKey("USER_ID_FK"))
+    nanny_id = Column(Integer, ForeignKey("USER_ID_FK"))
     star_time = Column(DateTime(timezone=True), nullable=False)
     end_time = Column(DateTime(timezone=True), nullable=True)
     hourly_rate = Column(Float, nullable=False)
@@ -83,9 +84,9 @@ class Rating(Base):
     __tablename__ = "ratings"
 
     id = Column(Integer, primary_key=True, index=True)
-    rater_id = Column(Integer, ForeignKey("users.id"))
-    rated_id = Column(Integer, ForeignKey("users.id"))
-    session_id = Column(Integer, ForeignKey("session.id"), nullable=True)
+    rater_id = Column(Integer, ForeignKey("USER_ID_FK"))
+    rated_id = Column(Integer, ForeignKey("USER_ID_FK"))
+    session_id = Column(Integer, ForeignKey("SESSION_ID_FK"), nullable=True)
     rating = Column(Integer, nullable=True) # 1-5 stars
     comment = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
