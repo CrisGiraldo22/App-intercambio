@@ -1,6 +1,4 @@
-from datetime import timezone
-from email.policy import default
-from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey, Float, Enum, column
+from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey, Float, Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 import enum
@@ -90,6 +88,10 @@ class Rating(Base):
     rating = Column(Integer, nullable=True) # 1-5 stars
     comment = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # Relationships
+    rater = relationship("User", foreign_keys=[rater_id], back_populates="ratings_given")
+    rated = relationship("User", foreign_keys=[rated_id], back_populates="ratings_received")
 
 
 
